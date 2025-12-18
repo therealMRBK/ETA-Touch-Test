@@ -1,0 +1,5 @@
+{
+  "name": "ETAtouch Monitor",
+  "description": "Professional dashboard for ETAtouch heating systems with historical graphs and CAN-bus explorer.",
+  "requestFramePermissions": []
+}
