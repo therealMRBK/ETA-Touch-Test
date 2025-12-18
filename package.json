@@ -12,7 +12,8 @@
     "react": "^19.2.3",
     "react-chartjs-2": "^5.3.1",
     "lucide-react": "^0.561.0",
-    "chart.js": "^4.5.1"
+    "chart.js": "^4.5.1",
+    "vite": "^7.3.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
