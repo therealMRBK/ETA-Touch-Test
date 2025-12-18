@@ -1,17 +1,20 @@
+
 import { defineConfig } from 'vite';
 
 export default defineConfig({
   server: {
-    // Erlaubt den Zugriff von außen (horcht auf allen Netzwerk-Schnittstellen)
     host: true,
-    // DEAKTIVIERT WEBSOCKETS (HMR) KOMPLETT
-    // Dies verhindert die Versuche von Vite, eine wss:// Verbindung aufzubauen.
+    // Deaktiviert HMR (Hot Module Replacement) komplett, da dies WebSockets nutzt.
+    // Die Seite muss bei Code-Änderungen manuell neu geladen werden.
     hmr: false,
-    // Verhindert "Blocked request" Fehler bei Zugriff über die Cloud-Domains
     allowedHosts: [
       'pellets.bravokilo.cloud',
       'pc.bravokilo.cloud',
-      '.bravokilo.cloud' // Erlaubt alle Subdomains von bravokilo.cloud
+      '.bravokilo.cloud'
     ]
+  },
+  // Verhindert das Injizieren des Vite-Clients, der WebSockets öffnen würde
+  optimizeDeps: {
+    disabled: true
   }
 });
