@@ -14,7 +14,8 @@ import {
   Terminal,
   Gauge,
   Flame,
-  Info
+  Info,
+  ShieldCheck
 } from 'lucide-react';
 import {
   Chart as ChartJS,
@@ -47,6 +48,7 @@ const DEFAULT_CONFIG = {
   apiUrl: 'https://pc.bravokilo.cloud',
   refreshInterval: 60, // seconds
   mockMode: true, // For demo purposes if API is unreachable
+  allowedHosts: ['pc.bravokilo.cloud', 'pellets.bravokilo.cloud'],
 };
 
 type AppView = 'overview' | 'menu' | 'errors' | 'config';
@@ -100,7 +102,14 @@ export default function ETAtouchApp() {
   // Load config from "DB" (localStorage)
   useEffect(() => {
     const savedConfig = localStorage.getItem('eta_config');
-    if (savedConfig) setConfig(JSON.parse(savedConfig));
+    if (savedConfig) {
+      const parsed = JSON.parse(savedConfig);
+      // Ensure pellets is there if we are upgrading an existing save
+      if (parsed.allowedHosts && !parsed.allowedHosts.includes('pellets.bravokilo.cloud')) {
+        parsed.allowedHosts.push('pellets.bravokilo.cloud');
+      }
+      setConfig(parsed);
+    }
     
     const savedDb = localStorage.getItem('eta_db');
     if (savedDb) setDb(JSON.parse(savedDb));
@@ -133,10 +142,6 @@ export default function ETAtouchApp() {
     addLog('SyncService', 'info', 'Starting background data fetch...');
 
     try {
-      // In a real environment, we'd fetch from the actual API.
-      // Since this is a UI prototype and might hit CORS, we'll simulate the response 
-      // based on the provided PDF documentation if mockMode is on.
-      
       if (config.mockMode) {
         await new Promise(r => setTimeout(r, 1500));
         
@@ -169,10 +174,6 @@ export default function ETAtouchApp() {
 
         addLog('SyncService', 'success', 'Data stored in local database.');
       } else {
-        // REAL API CALL CODE (Would be used with PHP proxy to bypass CORS)
-        // const res = await fetch(`${config.apiUrl}/user/menu`);
-        // const xml = await res.text();
-        // ... parse xml ...
         addLog('SyncService', 'error', 'External API blocked by CORS. Please use PHP proxy or Mock Mode.');
       }
     } catch (e: any) {
@@ -478,6 +479,20 @@ export default function ETAtouchApp() {
                 className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-white outline-none focus:border-orange-500 transition-colors"
               />
             </div>
+            
+            <div className="pt-2">
+              <label className="block text-sm text-slate-400 mb-1.5 flex items-center gap-2">
+                <ShieldCheck size={14} /> Allowed Hosts
+              </label>
+              <div className="space-y-2">
+                {config.allowedHosts.map((host, idx) => (
+                  <div key={idx} className="flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800 text-xs font-mono text-emerald-400">
+                    <span className="flex-1">{host}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <div className="flex items-center gap-3 py-2">
               <input 
                 type="checkbox" 
