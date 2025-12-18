@@ -3,16 +3,28 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   server: {
     host: true,
-    // DEAKTIVIERT HMR UND WEBSOCKETS KOMPLETT
-    hmr: false,
+    port: 5173,
+    hmr: false, // ABSOLUTELY NO WEBSOCKETS
+    ws: false,
+    watch: {
+      usePolling: true,
+      interval: 1000,
+    },
     allowedHosts: [
       'pellets.bravokilo.cloud',
       'pc.bravokilo.cloud',
-      '.bravokilo.cloud'
+      '.bravokilo.cloud',
+      'localhost'
     ]
   },
-  // Verhindert das Laden des Vite-Clients im Browser, der WebSockets öffnen würde
+  // Ensure we are treated as a static app, no fancy dev server client injection
+  appType: 'mpa', 
   optimizeDeps: {
     disabled: true
+  },
+  build: {
+    commonjsOptions: {
+      include: []
+    }
   }
 });
